@@ -3,13 +3,21 @@
 open System
 
 let make letter = 
+    let mirrorAndFuse l = l @ (l |> List.rev |> List.tail)
+    let makeLine letterCount (letter, letterIndex) =
+        let leadingSpace = String(' ', letterCount - 1 - letterIndex)
+        let innerSpace = String(' ', letterCount - 1 - leadingSpace.Length)
+        
+        let left = 
+            sprintf "%s%c%s" leadingSpace letter innerSpace
+            |> Seq.toList 
+        left 
+        |> mirrorAndFuse
+        |> List.map string
+        |> List.reduce (sprintf "%s%s")
 
-    let makeLine letterCount letter =
-        let padding = String(' ', letterCount - 1)
-        sprintf "%s%c%s" padding letter padding
-
-    let letters = ['A'.. letter] 
+    let letters = ['A'.. letter] |> List.mapi (fun i l -> l, i)
     letters
-    @ (letters |> List.rev |> List.tail)
+    |> mirrorAndFuse
     |> List.map (makeLine letters.Length)
     |> List.reduce (fun x y -> sprintf "%s%s%s" x Environment.NewLine y)
